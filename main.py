@@ -1,16 +1,18 @@
-# This is a sample Python script.
+import torch.nn as nn
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# First of all,we still need to consider the input sample data,
+# and use it as the base for building the neural network
 
+# define the input number
+N=0 # numbers of groups witch is the test data
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+model = nn.Sequential(
+    nn.Linear(N,10,True),
+    nn.ReLU(),
+    nn.Linear(10,5,True),
+    nn.ReLU(),
+    nn.Linear(5,3,True),
+    nn.ReLU(),
+    nn.Linear(3,2)
+)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
