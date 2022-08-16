@@ -76,7 +76,7 @@ def readAndProcessingAllData(filename):
 filename = "E:\Work\Test_System\Identify_0_And_1_numbers\DataA.xlsx"
 readAndProcessingAllData(filename)
 
-'''
+
 # define x and y
 x = 100
 y = 100
@@ -122,4 +122,3 @@ for t in range(500):
 
     # Optimization parameters (优化参数)
     optimizer.step()
-'''
