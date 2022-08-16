@@ -2,64 +2,89 @@ import torch.nn
 import torch.nn as nn
 import xlrd
 
-# Collecting data sets (搜集数据集)
+# Use the list and add the data to the trainTensor to train the neural network 利用list，并将数据加入到trainTensor中从而进行神经网络的训练
+trainXList = []
+trainYList = []
 
-X = torch.tensor([64, 12])
-Y = torch.tensor([12])
-def readAllData(filename):
+# Use the list and add the data to the testTensor to test the neural network 利用list，并将数据加入到testTensor中从而进行神经网络的测试
+testXList = []
+testYList = []
+
+# for train model  64 is all of number  52 + 14 it has two numbers (0 and 1) is Repetitive
+# 因为为了训练模型所以64个数被分为了52和14 两组（满足28定理）又因为有一个数字作为重复的即做训练也做测试
+
+# 26 and 7 are represented as 26 data in the number '0' as training and 7 data as test
+# 26和7表示为数字‘0’中26个数据作为训练，7个数据作为测试
+trainX = torch.tensor([52, 12])
+trainY = torch.tensor([52])
+
+testX = torch.tensor([14, 12])
+testY = torch.tensor([14])
+# Collecting data sets And Processing the data (搜集数据集，并将其处理)
+def readAndProcessingAllData(filename):
     readXls = xlrd.open_workbook(filename)
     sheet1 = readXls.sheet_by_name('Data')
     data_row = 4
     data_column = 10
     value_row = 8
     value_column = 13
-    # cell = sheet1.cell_value(4, 10)
-    XList = []
-    YList = []
+    deviceTrandTeF = 0
+
     for i in range(64):
         xlist = []
-        if i > 0 :
+        if i > 0:
             data_row -= 4
             data_column += 4
-        myFlag = 0
+        colleController = 0 # this controller is using the data colleciton 数据搜集控制器
         for j in range(12):
             xvalue = sheet1.cell_value(data_row, data_column)
-            print("x value is " + str(xvalue))
             xlist.append(xvalue)
-            myFlag += 1
-            if myFlag == 3:
+            colleController += 1
+            if colleController == 3:
                 data_column -= 2
                 data_row += 1
-                myFlag = 0
+                colleController = 0
             else:
                 data_column += 1
-        XList.append(xlist)
-        yvalue = sheet1.cell_value(value_row, value_column)
-        YList.append(yvalue)
-        print("y value is " + str(yvalue))
-        value_column += 4
-        print("\n")
 
-    X = torch.tensor(XList, dtype=torch.long)
-    Y = torch.tensor(YList, dtype=torch.long)
-    print(X)
-    print(Y)
+        yvalue = sheet1.cell_value(value_row, value_column)
+
+        if deviceTrandTeF%32 <= 26:
+            trainXList.append(xlist)
+            trainYList.append(yvalue)
+        if deviceTrandTeF%32 >=26:
+            testXList.append(xlist)
+            trainYList.append(yvalue)
+
+        value_column += 4
+
+        deviceTrandTeF += 1
+
+    trainX = torch.tensor(trainXList, dtype=torch.long)
+    trainY = torch.tensor(trainYList, dtype=torch.long)
+
+    print(trainX)
+    print(trainY)
+
+    testX = torch.tensor(testXList, dtype=torch.long)
+    testY = torch.tensor(testYList, dtype=torch.long)
+
+    print(testX)
+    print(testY)
 
 
 filename = "E:\Work\Test_System\Identify_0_And_1_numbers\DataA.xlsx"
-readAllData(filename)
+readAndProcessingAllData(filename)
 
-
+'''
 # define x and y
 x = 100
 y = 100
 
-
-
 # define the input number
-N = 10  # numbers of groups witch is the test data
+N = 12  # numbers of groups witch is the test data
 
-# in this model the N is  3*4(meening is 3c 4r)
+# in this model the N is  4*3(meening is 4r 3c)
 
 model = nn.Sequential(
     nn.Linear(N, 10, True),
@@ -97,4 +122,4 @@ for t in range(500):
 
     # Optimization parameters (优化参数)
     optimizer.step()
-
+'''
