@@ -1,15 +1,6 @@
 import torch.nn
 import torch.nn as nn
 import xlrd
-
-# Use the list and add the data to the trainTensor to train the neural network 利用list，并将数据加入到trainTensor中从而进行神经网络的训练
-trainXList = []
-trainYList = []
-
-# Use the list and add the data to the testTensor to test the neural network 利用list，并将数据加入到testTensor中从而进行神经网络的测试
-testXList = []
-testYList = []
-
 # for train model  64 is all of number  52 + 14 it has two numbers (0 and 1) is Repetitive
 # 因为为了训练模型所以64个数被分为了52和14 两组（满足28定理）又因为有一个数字作为重复的即做训练也做测试
 
@@ -22,6 +13,14 @@ testX = torch.tensor([14, 12])
 testY = torch.tensor([14])
 # Collecting data sets And Processing the data (搜集数据集，并将其处理)
 def readAndProcessingAllData(filename):
+    # Use the list and add the data to the trainTensor to train the neural network 利用list，并将数据加入到trainTensor中从而进行神经网络的训练
+    trainXList = []
+    trainYList = []
+
+    # Use the list and add the data to the testTensor to test the neural network 利用list，并将数据加入到testTensor中从而进行神经网络的测试
+    testXList = []
+    testYList = []
+
     readXls = xlrd.open_workbook(filename)
     sheet1 = readXls.sheet_by_name('Data')
     data_row = 4
@@ -49,12 +48,13 @@ def readAndProcessingAllData(filename):
 
         yvalue = sheet1.cell_value(value_row, value_column)
 
-        if deviceTrandTeF%32 <= 26:
+        # 25 is 26(25就是1开始的26)
+        if deviceTrandTeF%32 <= 25:
             trainXList.append(xlist)
             trainYList.append(yvalue)
-        if deviceTrandTeF%32 >=26:
+        if deviceTrandTeF%32 >=25:
             testXList.append(xlist)
-            trainYList.append(yvalue)
+            testYList.append(yvalue)
 
         value_column += 4
 
@@ -77,9 +77,6 @@ filename = "E:\Work\Test_System\Identify_0_And_1_numbers\DataA.xlsx"
 readAndProcessingAllData(filename)
 
 
-# define x and y
-x = 100
-y = 100
 
 # define the input number
 N = 12  # numbers of groups witch is the test data
@@ -108,10 +105,10 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 # The process of training (训练的过程)
 for t in range(500):
     # Passing the values into the neural network the predicted value of y is calculated (将数值传入神经网络中，并将y的预测值算出)
-    y_pred = model(x)
+    y_pred = model(trainX)
 
     # The predicted values of y and y are calculated using the loss function to work out the deviation values (利用损失函数对y与y的预测值进行计算，并得出偏差值)
-    loss = loss_fn(y_pred, y)
+    loss = loss_fn(y_pred, trainY)
     print(t, loss.item())
 
     # Using optimizer to clear grad of modle (利用optimizer进行对偏导清零操作)
@@ -122,3 +119,4 @@ for t in range(500):
 
     # Optimization parameters (优化参数)
     optimizer.step()
+
