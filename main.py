@@ -105,7 +105,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 # The process of training (训练的过程)
 for t in range(500):
     # Passing the values into the neural network the predicted value of y is calculated (将数值传入神经网络中，并将y的预测值算出)
-    y_pred = model(trainX)
+    y_pred = model(trainX)  # have some bugs
 
     # The predicted values of y and y are calculated using the loss function to work out the deviation values (利用损失函数对y与y的预测值进行计算，并得出偏差值)
     loss = loss_fn(y_pred, trainY)
@@ -120,3 +120,15 @@ for t in range(500):
     # Optimization parameters (优化参数)
     optimizer.step()
 
+
+# test Modle
+torch.no_grad()
+outputs = model(testX)
+print("this is the testX:")
+print(testX)
+print("\n")
+print("test modle:")
+print(outputs)
+
+print("testY:")
+print(testY)
