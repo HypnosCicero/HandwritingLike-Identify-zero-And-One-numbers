@@ -1,16 +1,23 @@
+import numpy as np
 import torch.nn
 import torch.nn as nn
 import xlrd
+
 # for train model  64 is all of number  52 + 14 it has two numbers (0 and 1) is Repetitive
 # 因为为了训练模型所以64个数被分为了52和14 两组（满足28定理）又因为有一个数字作为重复的即做训练也做测试
 
 # 26 and 7 are represented as 26 data in the number '0' as training and 7 data as test
 # 26和7表示为数字‘0’中26个数据作为训练，7个数据作为测试
+global trainX
+global trainY
 trainX = torch.tensor([52, 12])
-trainY = torch.tensor([52])
+trainY = torch.tensor([52, 2]) # using the onehot coding
 
+global testX
+global testY
 testX = torch.tensor([14, 12])
-testY = torch.tensor([14])
+testY = torch.tensor([14, 2])
+
 # Collecting data sets And Processing the data (搜集数据集，并将其处理)
 def readAndProcessingAllData(filename):
     # Use the list and add the data to the trainTensor to train the neural network 利用list，并将数据加入到trainTensor中从而进行神经网络的训练
@@ -48,34 +55,42 @@ def readAndProcessingAllData(filename):
 
         yvalue = sheet1.cell_value(value_row, value_column)
 
+        ylist = processingYValue(yvalue)
+
         # 25 is 26(25就是1开始的26)
-        if deviceTrandTeF%32 <= 25:
+        if deviceTrandTeF % 32 <= 25:
             trainXList.append(xlist)
-            trainYList.append(yvalue)
-        if deviceTrandTeF%32 >=25:
+            trainYList.append(ylist)
+        if deviceTrandTeF % 32 >= 25:
             testXList.append(xlist)
-            testYList.append(yvalue)
+            testYList.append(ylist)
 
         value_column += 4
 
         deviceTrandTeF += 1
 
-    trainX = torch.tensor(trainXList, dtype=torch.long)
-    trainY = torch.tensor(trainYList, dtype=torch.long)
+    global trainX
+    global trainY
+    trainX = torch.tensor(trainXList, dtype=torch.float)
+    trainY = torch.tensor(trainYList, dtype=torch.float)
 
-    print(trainX)
-    print(trainY)
+    global testX
+    global testY
+    testX = torch.tensor(testXList, dtype=torch.float)
+    testY = torch.tensor(testYList, dtype=torch.float)
 
-    testX = torch.tensor(testXList, dtype=torch.long)
-    testY = torch.tensor(testYList, dtype=torch.long)
-
-    print(testX)
-    print(testY)
-
+def processingYValue(yvalue):
+    ylist = []
+    if yvalue == 1:
+        ylist.append(0)
+        ylist.append(1)
+    elif yvalue ==0:
+        ylist.append(1)
+        ylist.append(0)
+    return ylist
 
 filename = "E:\Work\Test_System\Identify_0_And_1_numbers\DataA.xlsx"
 readAndProcessingAllData(filename)
-
 
 
 # define the input number
@@ -106,6 +121,8 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 for t in range(500):
     # Passing the values into the neural network the predicted value of y is calculated (将数值传入神经网络中，并将y的预测值算出)
     y_pred = model(trainX)  # have some bugs
+
+    y_pred = y_pred.squeeze(-2) # this is new
 
     # The predicted values of y and y are calculated using the loss function to work out the deviation values (利用损失函数对y与y的预测值进行计算，并得出偏差值)
     loss = loss_fn(y_pred, trainY)
